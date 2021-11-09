@@ -19,6 +19,15 @@ async function run(){
     try{
         await client.connect()
         console.log("mongo server connect successfully")
+        const database = client.db("watchDog");
+        const ProductCollection = database.collection("product");
+
+        //get products 
+        app.get('/product',async(req, res)=>{
+            const cursor = ProductCollection.find({});
+            const product= await cursor.toArray();
+            res.send(product)
+          })
     }
     finally{
 
