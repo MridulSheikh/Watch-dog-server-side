@@ -32,6 +32,12 @@ async function run(){
             const product= await cursor.toArray();
             res.send(product)
           })
+      // post product
+      app.post('/product', async(req, res)=>{
+        const product = req.body;
+        const result = await ProductCollection.insertOne(product);
+        res.json(result)
+      })
       //get single service
       app.get('/product/:id', async (req, res)=>{
         const id = req.params.id;
@@ -69,8 +75,8 @@ async function run(){
        })
        app.put('/users', async (req, res)=>{
         const user = req.body
-        console.log('put', user)
         const filter = {email: user.email};
+        console.log(filter)
         const options = { upsert: true };
         const updateDoc = {$set: user}
         const result = await usersCollection.updateOne(filter, updateDoc, options)
@@ -89,6 +95,37 @@ async function run(){
           const revews= await cursor.toArray();
           res.send(revews)
         }) 
+        // order manage 
+        app.put('/orders', async (req, res)=>{
+          const orders = req.body;
+          const filter = {_id: ObjectId(orders._id)}
+          const updateDoc = {
+            $set: {
+              status: 'shipping'
+            },
+          };
+          const result = await ordersCollection.updateOne(filter, updateDoc);
+          res.json(result)
+        })
+        //get user
+        app.get('/user', async (req, res)=>{
+          const curser = usersCollection.find({});
+          const users = await curser.toArray()
+          res.send(users)
+        })
+
+        //make admin
+        app.put('/user/admin', async (req, res)=>{
+           const user =req.body;
+           const filter = {email : user.email}
+           const updateDoc = {
+            $set: {
+              role : 'Admin'
+            },
+          };
+          const result = await usersCollection.updateOne(filter, updateDoc);
+          res.json(result)
+        })
     }
     finally{
        
