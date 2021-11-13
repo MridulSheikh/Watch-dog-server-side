@@ -38,7 +38,14 @@ async function run(){
         const result = await ProductCollection.insertOne(product);
         res.json(result)
       })
-      //get single service
+      //delete product 
+      app.delete('/product/:id', async (req, res)=>{
+        const id = req.params.id;
+        const query = {_id : ObjectId(id)}
+        const result = await ProductCollection.deleteOne(query);
+        response.json(result)
+      })
+      //get single product
       app.get('/product/:id', async (req, res)=>{
         const id = req.params.id;
         const query = {_id: ObjectId(id)};
@@ -81,6 +88,16 @@ async function run(){
         const updateDoc = {$set: user}
         const result = await usersCollection.updateOne(filter, updateDoc, options)
         res.json(result)
+       })
+       app.get('/users/:email', async (req, res)=>{
+         const email =req.params.email;
+         const query = {email : email}
+         const user = await usersCollection.findOne(query);
+         let isAdmin = false;
+         if(user?.role === 'Admin'){
+           isAdmin = true
+         }
+         res.json({Admin : isAdmin})
        })
        //revew post
        app.post('/revew', async (req, res)=>{
